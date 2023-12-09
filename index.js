@@ -51,7 +51,7 @@ async function run() {
         // Example: Update the 'uploads' field in the 'card' collection
         await card.updateOne(
           { "incomplete.client_id": clientId },
-          { $set: { "incomplete.$.uploads": uploads } }
+          { $set: { "incomplete.$.uploads-file": uploads } }
         );
 
         // Remove uploaded files from the 'uploads' folder
