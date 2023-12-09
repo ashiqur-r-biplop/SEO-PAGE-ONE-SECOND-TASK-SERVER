@@ -26,10 +26,10 @@ const client = new MongoClient(uri, {
 // Multer configuration
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./uploads"); // specify the destination folder for your uploads
+    cb(null, path.join(__dirname, "files"));
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // generate a unique filename
+    cb(null, Date.now() + path.extname(file.originalname));
   },
 });
 
@@ -46,19 +46,13 @@ async function run() {
       try {
         const clientId = req.params.clientId;
         const uploads = req.files;
-
-        // Save file information to the database (you may need to modify this part)
-        // Example: Update the 'uploads' field in the 'card' collection
         await card.updateOne(
           { "incomplete.client_id": clientId },
-          { $set: { "incomplete.$.uploads-file": uploads } }
+          { $set: { "incomplete.$.uploadsFile": uploads } }
         );
-
-        // Remove uploaded files from the 'uploads' folder
         uploads.forEach((file) => {
           fs.unlinkSync(file.path);
         });
-
         res.status(200).send("Files uploaded successfully!");
       } catch (error) {
         console.log(error?.message);
