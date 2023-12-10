@@ -26,7 +26,7 @@ const client = new MongoClient(uri, {
 // Multer configuration
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "files"));
+    cb(null, path.join(__dirname, "./files"));
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + path.extname(file.originalname));
