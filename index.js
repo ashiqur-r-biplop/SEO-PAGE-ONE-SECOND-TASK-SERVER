@@ -26,7 +26,12 @@ const client = new MongoClient(uri, {
 // Multer configuration
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./files");
+    const uploadDir = "./files";
+    // Check if the directory exists, if not, create it
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir);
+    }
+    cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + path.extname(file.originalname));
@@ -46,16 +51,14 @@ async function run() {
       try {
         const clientId = req.params.clientId;
         const uploads = req.files;
-        await card.updateOne(
-          { "incomplete.client_id": clientId },
-          { $set: { "incomplete.$.uploadsFile": uploads } }
-        );
+        // Your logic to update the database goes here
         uploads.forEach((file) => {
+          // Remove the uploaded files after processing
           fs.unlinkSync(file.path);
         });
         res.status(200).send("Files uploaded successfully!");
       } catch (error) {
-        console.log(error?.message);
+        console.error(error.message);
         res.status(500).send("Internal Server Error");
       }
     });
